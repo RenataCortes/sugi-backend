@@ -1,0 +1,19 @@
+#API
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic-settings
+
+#BD
+sqlalchemy
+psycopg2-binary
+
+#Seguridad 
+passlib[bcrypt]
+python-jose[cryptography]
+
+#RAG e IA
+langchain
+langchain-community
+chromadb
+pypdf
