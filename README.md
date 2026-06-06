@@ -40,7 +40,7 @@ El proyecto sigue una estructura modular por capas:
 
 ### Seguridad
 
-* JOSE (JWT Tokens)
+* JWT Tokens
 * Passlib (Bcrypt)
 
 ---
@@ -52,7 +52,7 @@ Sigue estos pasos para levantar el entorno de desarrollo:
 ### 1. Clonar el repositorio e ingresar a la carpeta
 
 ```bash
-git clone <URL_DE_TU_REPOSITORIO>
+git clone https://github.com/RenataCortes/sugi-backend.git
 cd sugi-back
 ```
 
