@@ -1,30 +1,31 @@
 import uuid
-from sqlalchemy import Column, String, Boolean
+from datetime import datetime, timezone
+from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import declarative_base
 
-# Esta es la clase base de la cual heredarán todos nuestros modelos
-Base = declarative_base()
+# Importa tu Base desde donde la tengas definida (ej. app.core.database import Base)
+from app.core.database import Base 
 
 class User(Base):
     __tablename__ = "users"
 
-    # UUID nativo de Postgres: indescifrable y súper seguro para los IDs
-    id = Column(
-        UUID(as_uuid=True), 
-        primary_key=True, 
-        default=uuid.uuid4, 
-        unique=True, 
-        nullable=False,
-        index=True
-    )
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     
-    # Email único e indexado para búsquedas ultra rápidas en el login
-    email = Column(String(255), unique=True, index=True, nullable=False)
+    # Nuevos datos personales
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
     
-    # Almacenará el hash de bcrypt, nunca el texto plano
-    hashed_password = Column(String(255), nullable=False)
+    # Fechas ISO 8601 (Guardadas en UTC para evitar broncas de zonas horarias)
+    registration_date = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    last_activity = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
-    # Controles de estado de la cuenta
-    is_active = Column(Boolean, default=True, nullable=False)
-    is_superuser = Column(Boolean, default=False, nullable=False)
+    # Métricas y Gamificación
+    streak_days = Column(Integer, default=0)
+    percentage_domain = Column(Float, default=0.0)
+    seconds_time_spent = Column(Integer, default=0)
+    
+    # Flags de sistema
+    is_active = Column(Boolean, default=True)
+    is_superuser = Column(Boolean, default=False)
