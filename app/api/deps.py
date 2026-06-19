@@ -1,5 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from fastapi import Query
+
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,3 +39,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         raise credentials_exception
         
     return user
+
+def get_pagination_params(
+    skip: int = Query(0, ge=0, description="Cuántos registros saltar (Offset)"),
+    limit: int = Query(10, ge=1, le=100, description="Límite máximo por página (Max 100)")
+) -> dict:
+    """
+    Dependencia global para estandarizar la paginación en toda la API.
+    Devuelve un diccionario
+    """
+    return {"skip": skip, "limit": limit}
