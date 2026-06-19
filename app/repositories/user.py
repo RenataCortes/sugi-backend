@@ -7,10 +7,6 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import get_password_hash
 
-# ==========================================
-# FUNCIONES DE LECTURA (GET)
-# ==========================================
-
 async def get_user_by_email(db: AsyncSession, email: str):
     """
     Busca un usuario por su correo. 
