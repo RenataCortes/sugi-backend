@@ -83,6 +83,10 @@ async def delete_user(db: AsyncSession, db_user: User):
     """
     Elimina al usuario de la base de datos para siempre.
     """
-    await db.delete(db_user)
+    db_user.is_active = False
+
+    db.add(db_user)
+
     await db.commit()
+    await db.refresh(db_user)
     return db_user

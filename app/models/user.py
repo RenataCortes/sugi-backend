@@ -1,10 +1,15 @@
 import uuid
+import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime
+from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
-
-# Importa tu Base desde donde la tengas definida (ej. app.core.database import Base)
 from app.core.database import Base 
+
+class Role(str, enum.Enum):
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    STUDENT = "student"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -28,4 +33,4 @@ class User(Base):
     
     # Flags de sistema
     is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
+    role = Column(Enum(Role),default=Role.STUDENT)
