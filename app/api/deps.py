@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.user import User
+from app.models.user import User,Role
 from app.repositories.user import get_user_by_email
 
 # Esto le dice a Swagger dónde está la ruta para conseguir el token
@@ -39,6 +39,41 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         raise credentials_exception
         
     return user
+
+def get_current_active_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Valida que el usuario no esté 'borrado' o suspendido."""
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Usuario inactivo o suspendido"
+        )
+    return current_user
+
+def get_current_admin(
+    current_user: User = Depends(get_current_active_user)
+) -> User:
+    """Valida que el usuario sea administrador (Superuser)."""
+    if current_user.role != Role.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Requiere rol de Administrador"
+        )
+
+    return current_user
+
+def get_current_teacher(
+    current_user: User = Depends(get_current_active_user)
+) -> User:
+    """Cadenero nivel 2: Deja pasar a Profesores y Administradores."""
+    # Si su rol NO es Admin NI Profesor, lo rebotamos
+    if current_user.role not in [Role.ADMIN, Role.TEACHER]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Requiere rol de Profesor"
+        )
+    return current_user
 
 def get_pagination_params(
     skip: int = Query(0, ge=0, description="Cuántos registros saltar (Offset)"),

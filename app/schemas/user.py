@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
+from app.models.user import Role
 import uuid
+
 
 # 1. Lo que el usuario nos manda al registrarse
 class UserCreate(BaseModel):
@@ -27,6 +29,7 @@ class UserResponse(BaseModel):
     percentage_domain: float
     seconds_time_spent: int
     is_active: bool
+    role: Role
 
     model_config = {
         "from_attributes": True
