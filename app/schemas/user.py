@@ -21,12 +21,13 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    registration_date: datetime
-    last_activity: datetime
+    registration_date: Optional[datetime] = None
+    last_activity: Optional[datetime] = None
     streak_days: int
     percentage_domain: float
     seconds_time_spent: int
     is_active: bool
+    role: str
 
     model_config = {
         "from_attributes": True

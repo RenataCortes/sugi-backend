@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import auth, users  
+
+from app.core.exceptions import setup_exception_handlers
 from app.core.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME, version="1.0.0")
@@ -22,6 +24,7 @@ app.add_middleware(
     allow_methods=["*"],         # Permite todos los métodos (GET, POST, PUT, DELETE)
     allow_headers=["*"],         # Permite todas las cabeceras personalizadas
 )
+setup_exception_handlers(app)
 
 app.include_router(auth.router)
 app.include_router(users.router)

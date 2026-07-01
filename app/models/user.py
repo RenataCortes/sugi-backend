@@ -2,8 +2,6 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-
-# Importa tu Base desde donde la tengas definida (ej. app.core.database import Base)
 from app.core.database import Base 
 
 class User(Base):
@@ -11,21 +9,19 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     
-    # Nuevos datos personales
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     
-    # Fechas ISO 8601 (Guardadas en UTC para evitar broncas de zonas horarias)
+    # Fechas: SQLAlchemy se encarga de la zona horaria UTC
     registration_date = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    last_activity = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    # onupdate hace que cambie sola cada vez que el usuario haga un cambio en su registro
+    last_activity = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
-    # Métricas y Gamificación
     streak_days = Column(Integer, default=0)
     percentage_domain = Column(Float, default=0.0)
     seconds_time_spent = Column(Integer, default=0)
     
-    # Flags de sistema
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
+    role = Column(String, default="student")
+    is_active = Column(Boolean, default=True, index=True)
