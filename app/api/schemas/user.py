@@ -29,6 +29,7 @@ class UserResponse(BaseModel):
     percentage_domain: float
     seconds_time_spent: int
     is_active: bool
+    is_superuser: bool
 
     model_config = {
         "from_attributes": True

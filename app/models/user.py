@@ -1,8 +1,15 @@
 import uuid
+import enum
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime
+from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base 
+
+class Role(str, enum.Enum):
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    STUDENT = "student"
+
 
 class User(Base):
     __tablename__ = "users"

@@ -1,32 +1,19 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse 
 from app.api.deps import get_current_user
 from app.core.security import create_access_token
 
 from app.services.auth import register_new_user, authenticate_user
-from app.repositories.user import get_user_by_email 
-
-# IMPORTAMOS NUESTRO ERROR DE DOMINIO
-from app.core.errors import DuplicatedEmailError
+from app.repositories.user import get_user_by_email # Solo para el forgot password temporal
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
-    """Registra un usuario nuevo validando que el correo sea único."""
-    
-    # 1. Buscamos si el correo ya está en la base de datos
-    existing_user = await get_user_by_email(db, email=user_data.email)
-    
-    # 2. Si ya existe, disparamos nuestra excepción personalizada (cero HTTPExceptions aquí)
-    if existing_user:
-        raise DuplicatedEmailError(email=user_data.email)
-        
-    # 3. Si todo está limpio, pasamos al servicio para crearlo
     return await register_new_user(db, user_data)
 
 @router.post("/login")
@@ -41,5 +28,5 @@ async def refresh_token(current_user: UserResponse = Depends(get_current_user)):
 @router.post("/forgot-password")
 async def forgot_password(email: str, db: AsyncSession = Depends(get_db)):
     user = await get_user_by_email(db, email=email)
-    # TODO: Lógica de envío de correos en el futuro - aun no se hace
+    # TODO: Lógica de envío de correos en el futuro- aun no se haace
     return {"message": "Si el correo existe en nuestros registros, te enviaremos las instrucciones de recuperación."}
