@@ -4,8 +4,6 @@ from datetime import datetime
 from app.models.user import Role
 import uuid
 
-
-# 1. Lo que el usuario nos manda al registrarse
 class UserCreate(BaseModel):
     first_name: str
     last_name: str
