@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import JSONResponse
 
 # Importamos nuestros errores nativos
 from app.core.errors import (InactiveUserError, InvalidCredentialsError,
@@ -33,7 +34,7 @@ def setup_exception_handlers(app: FastAPI):
             },
         )
 
-    # 2. Los que ya teníamos...
+     # 2. Los que ya teníamos...
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         return JSONResponse(
@@ -43,14 +44,20 @@ def setup_exception_handlers(app: FastAPI):
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Aquí extraemos los mensajes de forma amigable para que sean serializables
+        errors = []
+        for error in exc.errors():
+            errors.append({
+                "loc": error["loc"],
+                "msg": str(error["msg"]), # Convertimos explícitamente a string
+                "type": error["type"]
+           })
+        
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={
-                "error": True,
-                "message": "Los datos enviados no son válidos, revisa los campos.",
-                "details": exc.errors()
-            },
-        )
+            status_code=422,
+            content={"detail": errors},
+       )
+
 
     @app.exception_handler(SQLAlchemyError)
     async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):

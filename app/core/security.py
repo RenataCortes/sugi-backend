@@ -1,29 +1,33 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+import bcrypt
 from jose import jwt
-from passlib.context import CryptContext
 
 from app.core.config import settings
 
-# 1. Configuración de Bcrypt (lo que ya teníamos)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# 1. Configuración de Bcrypt (Nativa y segura)
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # Truncamos a 72 bytes para evitar errores de bcrypt y hasheamos
+    pwd_bytes = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    # Verificamos la contraseña truncándola también a 72 bytes por seguridad
+    pwd_bytes = plain_password.encode('utf-8')[:72]
+    hash_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(pwd_bytes, hash_bytes)
 
-# 2. Nueva lógica de Tokens JWT
+# 2. Lógica de Tokens JWT
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
-    Empaqueta los datos del usuario (como su ID o correo) en un token 
-    y lo firma con la SECRET_KEY de tu archivo .env.
+    Empaqueta los datos del usuario en un token y lo firma con la SECRET_KEY.
     """
     to_encode = data.copy()
     
-    # Configuramos el tiempo de expiración (vital para mitigar robos de sesión)
+    # Configuración de tiempo de expiración
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
@@ -31,7 +35,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     
     to_encode.update({"exp": expire})
     
-    # Generamos el token firmado usando el algoritmo definido (HS256)
+    # Generación del token
     encoded_jwt = jwt.encode(
         to_encode, 
         settings.SECRET_KEY, 
