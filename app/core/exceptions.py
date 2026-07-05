@@ -1,14 +1,31 @@
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
 
-# Importamos nuestros errores nativos
+from app.api.deps import get_current_user
 from app.core.errors import (InactiveUserError, InvalidCredentialsError,
                              SugiException, UserNotFoundError)
+from app.models.user import Role, User
 
+class RoleChecker:
+    def __init__(self, allowed_roles: list[Role]):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user: User = Depends(get_current_user)):
+        # 1. Verifica si el usuario está activo (seguridad base)
+        if not current_user.is_active:
+            raise HTTPException(status_code=400, detail="Usuario inactivo")
+            
+        # 2. Verifica si el rol está permitido
+        if current_user.role not in self.allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes los permisos necesarios"
+            )
+        return current_user
 
 def setup_exception_handlers(app: FastAPI):
     

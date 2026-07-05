@@ -6,6 +6,7 @@ from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.core.errors import DuplicateEmailException
 from app.core.security import create_access_token
+from app.models.user import User
 from app.repositories.user import get_user_by_email
 from app.schemas.user import UserCreate, UserResponse
 from app.services.auth import authenticate_user, register_new_user
@@ -29,7 +30,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     return await authenticate_user(db, form_data.username, form_data.password)
 
 @router.post("/refresh")
-async def refresh_token(current_user: UserResponse = Depends(get_current_user)):
+async def refresh_token(current_user: User = Depends(get_current_user)):
     new_access_token = create_access_token(data={"sub": current_user.email})
     return {"access_token": new_access_token, "token_type": "bearer"}
 
