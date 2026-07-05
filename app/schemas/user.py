@@ -1,8 +1,11 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from datetime import datetime
-from app.models.user import Role
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr, Field
+
+from app.models.user import Role
+
 
 class UserCreate(BaseModel):
     first_name: str

@@ -3,18 +3,14 @@ import math
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import (get_current_active_user, get_current_admin,
+                          get_pagination_params)
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserResponse, UserUpdate
+from app.repositories.user import (delete_user, get_all_users_paginated,
+                                   get_users_count, update_user)
 from app.schemas.pagination import PaginatedResponse
-from app.api.deps import get_current_user,get_current_active_user, get_current_admin,get_pagination_params
-
-from app.repositories.user import (
-    update_user, 
-    delete_user, 
-    get_all_users_paginated, 
-    get_users_count
-)
+from app.schemas.user import UserResponse, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 

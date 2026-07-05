@@ -1,7 +1,10 @@
 import asyncio
+
 from sqlalchemy.future import select
+
 from app.core.database import get_db
-from app.models.user import User, Role
+from app.models.user import Role, User
+
 
 async def fix_old_users():
     async for db in get_db():

@@ -1,13 +1,11 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Query, status
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Query
-
-from jose import jwt, JWTError
+from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.user import User,Role
+from app.models.user import Role, User
 from app.repositories.user import get_user_by_email
 
 # Esto le dice a Swagger dónde está la ruta para conseguir el token

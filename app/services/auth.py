@@ -1,9 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import create_access_token, verify_password
+from app.repositories.user import create_user, get_user_by_email
 from app.schemas.user import UserCreate
-from app.repositories.user import get_user_by_email, create_user
-from app.core.security import verify_password, create_access_token
+
 
 async def register_new_user(db: AsyncSession, user_data: UserCreate):
     """

@@ -1,10 +1,12 @@
 import asyncio
+
 from sqlalchemy.future import select
 
 # Importamos las herramientas de tu proyecto
 from app.core.database import get_db
-from app.models.user import User, Role
 from app.core.security import get_password_hash
+from app.models.user import Role, User
+
 
 async def create_super_admin():
     # Extraemos una sesión de tu base de datos manualmente

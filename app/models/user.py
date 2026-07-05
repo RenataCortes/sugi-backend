@@ -1,9 +1,12 @@
-import uuid
 import enum
+import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, Integer, Float, DateTime, Enum
+
+from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
-from app.core.database import Base 
+
+from app.core.database import Base
+
 
 class Role(str, enum.Enum):
     ADMIN = "admin"
