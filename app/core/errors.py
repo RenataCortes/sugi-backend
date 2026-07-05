@@ -8,6 +8,12 @@ class DuplicatedEmailError(SugiException):
     def __init__(self, email: str):
         super().__init__(f"El correo {email} ya está registrado. Intenta con otro o inicia sesión.")
 
+class DuplicateEmailException(Exception):
+    """Excepción lanzada cuando el correo ya está registrado."""
+    def __init__(self, message: str = "El correo ya existe"):
+        self.message = message
+        super().__init__(self.message)
+
 class UserNotFoundError(SugiException):
     def __init__(self):
         super().__init__("No encontramos a este usuario en la base de datos.")

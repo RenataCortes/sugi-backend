@@ -1,19 +1,26 @@
-#API
+# API
 fastapi
 uvicorn[standard]
 python-multipart
 pydantic-settings
 
-#BD
+# BD
 sqlalchemy
+psycopg-binary
 psycopg2-binary
+alembic
 
-#Seguridad 
+# Seguridad 
 passlib[bcrypt]
 python-jose[cryptography]
 
-#RAG e IA
+pydantic[email]
+# RAG e IA
 langchain
 langchain-community
 chromadb
 pypdf
+
+# Testing
+pytest
+httpx
