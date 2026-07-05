@@ -2,8 +2,9 @@ import sys
 import os
 import asyncio
 from logging.config import fileConfig
+from dotenv import load_dotenv
 
-
+# Añade el directorio raíz al path para que Python encuentre tus modelos
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from sqlalchemy import pool
@@ -19,6 +20,14 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
+# --- MAGIA DE TECH LEAD: LEER CREDENCIALES DEL .ENV ---
+load_dotenv()
+db_url = os.getenv("DATABASE_URL")
+if db_url:
+    # Sobreescribe la URL falsa del alembic.ini con la real y segura
+    config.set_main_option("sqlalchemy.url", db_url)
+# ------------------------------------------------------
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -26,15 +35,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -87,6 +88,10 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
+
+    # Parche salvavidas para evitar el WinError 10054 con psycopg y async
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     asyncio.run(run_async_migrations())
 
